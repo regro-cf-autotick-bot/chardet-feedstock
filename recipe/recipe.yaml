@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "7.6.0"
+  version: "7.7.0"
 
 package:
   name: chardet
@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/c/chardet/chardet-${{ version }}.tar.gz
-  sha256: 93d9df6089ded42ed1fe9f57e272c0b74bd0464d45c0c7d50f09f26f31105c3c
+  sha256: 0ba38a05201b0abf7570c12d8af45c30b2af835bd5cc52bfc7105082eda82c1e
   patches:
     # MSVC caps string literals below what mypyc's single-file mode emits
     # for the largest module; upstream's own Windows wheels apply the same
@@ -18,7 +18,7 @@ source:
       then: patches/0001-mypyc-msvc-compat.patch
 
 build:
-  number: 1
+  number: 0
   # Compiled per-platform builds plus one noarch fallback (built on
   # linux_64, de-prioritized via down_prioritize_variant) for platforms
   # and Python variants without a compiled build, per
@@ -43,14 +43,14 @@ requirements:
   build:
     - if: build_platform != target_platform
       then: cross-python_${{ target_platform }}
-    - if: build_platform != target_platform and not use_noarch
-      then:
-        - python
-        - cython >=3.0
-        - mypy >=1.19
-        - hatch-mypyc >=0.16.0
     - if: not use_noarch
       then:
+        - if: build_platform != target_platform
+          then:
+            - python
+            - cython >=3.0
+            - mypy >=1.19
+            - hatch-mypyc >=0.16.0
         - ${{ compiler('c') }}
         - ${{ stdlib("c") }}
   host:
