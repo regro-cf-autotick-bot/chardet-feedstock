@@ -18,7 +18,7 @@ source:
       then: patches/0001-mypyc-msvc-compat.patch
 
 build:
-  number: 1
+  number: 2
   # Compiled per-platform builds plus one noarch fallback (built on
   # linux_64, de-prioritized via down_prioritize_variant) for platforms
   # and Python variants without a compiled build, per
@@ -43,14 +43,14 @@ requirements:
   build:
     - if: build_platform != target_platform
       then: cross-python_${{ target_platform }}
-    - if: build_platform != target_platform and not use_noarch
-      then:
-        - python
-        - cython >=3.0
-        - mypy >=1.19
-        - hatch-mypyc >=0.16.0
     - if: not use_noarch
       then:
+        - if: build_platform != target_platform
+          then:
+            - python
+            - cython >=3.0
+            - mypy >=1.19
+            - hatch-mypyc >=0.16.0
         - ${{ compiler('c') }}
         - ${{ stdlib("c") }}
   host:
